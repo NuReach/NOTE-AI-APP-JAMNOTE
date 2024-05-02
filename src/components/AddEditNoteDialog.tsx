@@ -21,25 +21,43 @@ import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Note } from "@prisma/client";
+import { useState } from "react";
 
-export default function AddNoteDialog({ open, setOpen }: AddNoteDialogProps) {
+export default function AddEditNoteDialog({
+  open,
+  setOpen,
+  noteToEdit,
+}: AddNoteDialogProps) {
+  const [deleteInProgress, setDeleteInProgress] = useState(false);
   const router = useRouter();
   const form = useForm<CreateNoteSchema>({
     resolver: zodResolver(createNoteSchema),
     defaultValues: {
-      title: "",
-      content: "",
+      title: noteToEdit?.title || "",
+      content: noteToEdit?.content || "",
     },
   });
 
   async function onSubmit(input: CreateNoteSchema) {
     try {
-      const response = await fetch("/api/notes", {
-        method: "POST",
-        body: JSON.stringify(input),
-      });
-      if (!response.ok) throw Error("Status code: " + response.status);
-      form.reset();
+      if (noteToEdit) {
+        const response = await fetch("/api/notes", {
+          method: "PUT",
+          body: JSON.stringify({
+            id: noteToEdit.id,
+            ...input,
+          }),
+        });
+        if (!response.ok) throw Error("Status code: " + response.status);
+      } else {
+        const response = await fetch("/api/notes", {
+          method: "POST",
+          body: JSON.stringify(input),
+        });
+        if (!response.ok) throw Error("Status code: " + response.status);
+        form.reset();
+      }
       router.refresh();
       setOpen(false);
     } catch (error) {
@@ -48,11 +66,34 @@ export default function AddNoteDialog({ open, setOpen }: AddNoteDialogProps) {
     }
   }
 
+  async function deleteNote() {
+    if (!noteToEdit) return;
+    setDeleteInProgress(true);
+    try {
+      const response = await fetch("/api/notes", {
+        method: "DELETE",
+        body: JSON.stringify({
+          id: noteToEdit.id,
+        }),
+      });
+      if (!response.ok) throw Error("Status code: " + response.status);
+      router.refresh();
+      setOpen(false);
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setDeleteInProgress(false);
+    }
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">ADD NOTE</DialogTitle>
+          <DialogTitle className="text-2xl font-bold">
+            {noteToEdit ? "EDIT NOTE" : "ADD NOTE"}
+          </DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
@@ -85,7 +126,7 @@ export default function AddNoteDialog({ open, setOpen }: AddNoteDialogProps) {
                   </FormLabel>
                   <FormControl>
                     <Textarea
-                      className="text-lg"
+                      className="h-36 text-lg"
                       placeholder="Note content"
                       {...field}
                     />
@@ -95,6 +136,15 @@ export default function AddNoteDialog({ open, setOpen }: AddNoteDialogProps) {
               )}
             />
             <DialogFooter>
+              {noteToEdit && (
+                <Button
+                  disabled={deleteInProgress}
+                  onClick={deleteNote}
+                  variant="destructive"
+                >
+                  Delete
+                </Button>
+              )}
               {form.formState.isSubmitting ? (
                 <Button disabled>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -102,7 +152,7 @@ export default function AddNoteDialog({ open, setOpen }: AddNoteDialogProps) {
                 </Button>
               ) : (
                 <Button className="bg-black" type="submit">
-                  Submit
+                  {noteToEdit ? "Update" : "Submit"}
                 </Button>
               )}
             </DialogFooter>
@@ -116,4 +166,5 @@ export default function AddNoteDialog({ open, setOpen }: AddNoteDialogProps) {
 interface AddNoteDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
+  noteToEdit?: Note;
 }
