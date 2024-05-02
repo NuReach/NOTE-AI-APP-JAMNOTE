@@ -10,13 +10,14 @@ import AddEditNoteDialog from "@/components/AddEditNoteDialog";
 import ThemeToggleButton from "@/components/ThemeToggleButton";
 import { useTheme } from "next-themes";
 import { dark } from "@clerk/themes";
+import AIChatButton from "@/components/AiChatButton";
 
 export default function Navbar() {
   const [showAddNoteDialog, setShowAddNoteDialog] = useState(false);
   const { theme } = useTheme();
   return (
     <>
-      <div className="flex items-center justify-between px-3 shadow">
+      <div className="flex items-center justify-between px-3 py-2 shadow">
         <Link href={`/`} className="flex items-center">
           <Image src={logo} alt="Icon" width={80} height={80} />
           <h3 className="hidden md:block">JAM NOTE</h3>
@@ -43,8 +44,9 @@ export default function Navbar() {
             className="flex gap-3 dark:bg-purple-400  dark:text-white "
           >
             <Plus />
-            <p className=" text-sm md:text-lg">ADD NOTE</p>
+            <p className=" hidden text-sm md:block md:text-lg">ADD NOTE</p>
           </Button>
+          <AIChatButton />
         </div>
       </div>
       <div className="">

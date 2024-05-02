@@ -19,7 +19,7 @@ export default async function NotePage() {
   });
 
   return (
-    <div className="flex w-full flex-col  justify-center px-9 py-3">
+    <div className="flex w-full flex-col  justify-center px-3 py-3 md:px-9">
       <div className="flex items-center gap-3">
         <h1>Your Note</h1>
         <Notebook width={33} height={33} />
