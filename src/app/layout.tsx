@@ -3,8 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import localFont from "next/font/local";
-import { cn } from "@/lib/utils";
-
+import { ThemeProvider } from "./ThemeProvider";
 const fontSans = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
@@ -24,7 +23,9 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={myFont.className}>{children}</body>
+        <body className={myFont.className}>
+          <ThemeProvider attribute="class">{children}</ThemeProvider>
+        </body>
       </html>
     </ClerkProvider>
   );

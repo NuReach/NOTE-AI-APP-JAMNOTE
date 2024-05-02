@@ -27,10 +27,12 @@ export default function Note({ note }: NoteProps) {
     <>
       <Card
         onClick={() => setShowEditDialog(true)}
-        className="h-fit cursor-pointer overflow-hidden shadow-lg"
+        className="h-fit cursor-pointer overflow-hidden border-2 shadow-lg"
       >
         <CardHeader className="border-b">
-          <CardTitle>{note.title}</CardTitle>
+          <CardTitle>
+            <p>{note.title}</p>
+          </CardTitle>
           <CardDescription>
             {createdUpdatedAtTimestamp}
             {wasUpdated && " (updated)"}

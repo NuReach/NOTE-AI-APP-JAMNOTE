@@ -151,7 +151,10 @@ export default function AddEditNoteDialog({
                   Please wait
                 </Button>
               ) : (
-                <Button className="bg-black" type="submit">
+                <Button
+                  className="dark:bg-purple-400 dark:text-white"
+                  type="submit"
+                >
                   {noteToEdit ? "Update" : "Submit"}
                 </Button>
               )}
