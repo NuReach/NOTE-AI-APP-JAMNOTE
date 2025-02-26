@@ -18,7 +18,7 @@ export default function Home() {
         </p>
       </div>
       <Link href={"/notes"}>
-        <Button className="mt-6 bg-black">
+        <Button className="mt-6 bg-black text-white">
           <h3>Get Start</h3>
         </Button>
       </Link>
